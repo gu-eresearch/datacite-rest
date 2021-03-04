@@ -1,6 +1,6 @@
 import setuptools
 
-import doi_mgmt as meta
+import datacite_rest as meta
 
 with open('README.md', 'r', encoding='utf-8') as fh:
     long_description = fh.read()
@@ -20,7 +20,8 @@ setuptools.setup(
     },
     install_requires=[
         'pydantic>=1.8.1,<1.9',
-        'pyhumps>=1.6.1,<1.7'
+        'pyhumps>=1.6.1,<1.7',
+        'requests>=2.25.1,<2.26'
     ],
     classifiers=[
         'Programming Language :: Python :: 3',
