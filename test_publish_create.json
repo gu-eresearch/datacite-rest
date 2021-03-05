@@ -1,0 +1,22 @@
+{
+    "data": {
+      "type": "dois",
+      "attributes": {
+              "event": "publish",
+        "prefix": "10.17623",
+              "creators": [{
+          "name": "Data CO-OP"
+        }],
+              "titles": [{
+          "title": "DataCite test"
+        }],
+        "types": {
+          "resourceTypeGeneral": "Text"
+        },
+              "publisher": "DataCite e.V.",
+        "publicationYear": 2016,
+               "url": "https://datacoop.com.au/jedi"
+      }
+    }
+}
+  

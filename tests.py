@@ -1,10 +1,11 @@
 import datetime
 from unittest import TestCase, mock
 import copy
+import json
 
 from pydantic import BaseModel
 
-from datacite_rest import models, authentication
+from datacite_rest import models, authentication, DataCiteREST
 
 VALID_AUTH = {
     'id': 'abc123',
@@ -14,20 +15,40 @@ VALID_AUTH = {
 }
 
 
-class JSONPayloadModel(TestCase):
-    model = models.JSONPayloadModel
+# class TestDataCiteREST(TestCase):
+#     """ must have valid env var set for endpoints """
+#     def test_draft_create(self):
+#         json_body = None
+#         with open('test_draft_create.json', 'r') as f:
+#             json_body = json.loads(f.read())
 
-    def test_payload_list(self):
-        _ = self.model(data=[1, 2, 3])
+#         x = DataCiteREST()
+#         _ = x.create(json_body=json_body)
 
-    def test_payload_dict(self):
-        _ = self.model(data={'1': 2, '3': 4})
+#     def test_publish_create(self):
+#         json_body = None
+#         with open('test_draft_create.json', 'r') as f:
+#             json_body = json.loads(f.read())
 
-    def test_payload_model(self):
-        class TestModel(BaseModel):
-            x: str
-        m = TestModel(x='test')
-        _ = self.model(data=m)
+#         x = DataCiteREST()
+#         _ = x.create(json_body=json_body)
+
+
+# TODO: rewrite TestJSONPayloadModel for new data: types
+# class TestJSONPayloadModel(TestCase):
+#     model = models.JSONPayloadModel
+
+#     def test_payload_list(self):
+#         _ = self.model(data=[1, 2, 3])
+
+#     def test_payload_dict(self):
+#         _ = self.model(data={'1': 2, '3': 4})
+
+#     def test_payload_model(self):
+#         class TestModel(BaseModel):
+#             x: str
+#         m = TestModel(x='test')
+#         _ = self.model(data=m)
 
 
 class TestRespositoryAuthModel(TestCase):
@@ -70,9 +91,9 @@ class TestDataCiteModel(TestCase):
                 'publisher': 'test',
                 'publication_year': datetime.datetime.utcnow().year,
                 'types': {
-                    'resource_type': 'Text'
+                    'resource_type_general': 'Text'
                 },
-                'prefix': 10.111
+                'prefix': '10.111'
             }
         }
         return self.model(**data)
@@ -102,6 +123,19 @@ class TestDataCiteModel(TestCase):
             m2.attributes.creators[0].name,
             data['attributes']['creators'][0]['name']
         )
+
+    def test_create_doi_with_invalid_resource_type_general(self):
+        """
+        https://support.datacite.org/docs/schema-properties-overview-v43
+        #table-1-datacite-mandatory-properties
+        """
+        m1 = self._create_valid_base_model()
+
+        data = copy.deepcopy(m1.dict())
+        data['attributes']['types']['resource_type_general'] = 'foo'
+
+        with self.assertRaises(Exception):
+            _ = self.model(**data)
 
 
 class TestRespositoryAuth(TestCase):

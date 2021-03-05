@@ -4,6 +4,7 @@ import logging
 import requests
 
 from .authentication import RespositoryAuth
+from .models import Schema43Model, Schema43BaseModel
 
 log = logging.getLogger(__name__)
 
@@ -51,7 +52,7 @@ class DataCiteREST:
             log.error(f'{self}.request - Exception: {e}')
             raise Exception(e)
 
-    def list(self, query: Optional[str] = None) -> dict:
+    def list(self, query: Optional[str] = None) -> Dict:
         """ https://support.datacite.org/docs/api-get-lists """
         url_path = f'{self._base_path}/'
         params = {}
@@ -59,7 +60,28 @@ class DataCiteREST:
             params['query'] = query
         return self.request(url_path, params=params)
 
-    def retrieve(self, doi: str) -> dict:
+    def create(self, json_body: Dict) -> Dict:
+        """ https://support.datacite.org/docs/api-get-lists """
+        url_path = f'{self._base_path}/'
+        errors = []
+        payload = None
+        try:
+            payload = Schema43Model(**json_body)
+        except Exception as e:
+            errors.append(e)
+
+        if payload is None:
+            try:
+                payload = Schema43BaseModel(**json_body)
+            except Exception as e:
+                errors.append(e)
+                print(json_body)
+                raise Exception(e)
+
+        json_ = payload.dict()
+        return self.request(url_path, method='POST', json=json_)
+
+    def retrieve(self, doi: str) -> Dict:
         """ https://support.datacite.org/docs/api-get-doi """
         url_path = f'{self._base_path}/{doi}'
         return self.request(url_path)
