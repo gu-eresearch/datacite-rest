@@ -69,6 +69,7 @@ class DataCiteBaseModel(BaseModel):
         alias_generator = to_camel
         allow_population_by_field_name = True
         arbitrary_types_allowed = True
+        use_enum_values = True
 
 
 class DataCiteIdentifierModel(DataCiteBaseModel):
@@ -119,8 +120,8 @@ class DataCiteRequiredAttributesModel(DataCiteAttributesBaseModel):
     https://support.datacite.org/docs/schema-mandatory-properties-v43#
     https://support.datacite.org/docs/schema-properties-overview-v43
     """
-    doi: str
-    identifiers: Optional[List[DataCiteIdentifierModel]]
+    doi: Optional[str]  # on condition that prefix exists
+    identifiers: List[DataCiteIdentifierModel]
     creators: List[DataCiteCreatorModel]
     titles: List[DataCiteTitleModel]
     publisher: str
@@ -129,10 +130,22 @@ class DataCiteRequiredAttributesModel(DataCiteAttributesBaseModel):
     url: HttpUrl
 
     @validator('doi', check_fields=False, allow_reuse=True)
-    def doi_should_contain_slash(cls, v):
-        if '/' not in v or len(v.split('/')) != 2:
-            raise ValueError('doi should contain a single "/"')
-        return v.strip()
+    def doi_should_contain_slash(cls, v, values, **kwargs):
+        if not v and 'prefix' not in values:
+            raise ValueError(
+                f"datacite should contain 'prefix' or 'doi': {values}"
+            )
+        elif v is not None:
+            if '/' not in v or len(v.split('/')) != 2:
+                raise ValueError(f'doi should contain a single "/": {v}')
+            return v.strip()
+
+        return v
+
+    @validator('url', check_fields=False, allow_reuse=True)
+    def url_to_string(cls, v, values, **kwargs):
+        """ cast to str instead of HttpUrl model instance """
+        return str(v)
 
 
 class DataCiteAttributesModel(DataCiteRequiredAttributesModel):

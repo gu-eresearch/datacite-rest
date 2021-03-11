@@ -39,7 +39,7 @@ class DataCiteREST:
         url_path: str,
         method: str = 'GET',
         params: Optional[Dict] = None,
-        json: Optional[Union[List, Dict]] = None,
+        json_: Optional[Union[List, Dict]] = None,
         headers: Optional[Dict] = None,
     ) -> dict:
         """ proxy requests.request to add auth """
@@ -49,7 +49,7 @@ class DataCiteREST:
                 method=method,
                 url=f'{url_base}/{url_path}',
                 params=params,
-                json=json,
+                json=json_,
                 headers=headers,
                 auth=requests.auth.HTTPBasicAuth(
                     self._auth.id,
@@ -61,7 +61,7 @@ class DataCiteREST:
             return res.json()
         except Exception as e:
             log.error(f'{self}.request - Exception: {e}')
-            raise Exception(e)
+            raise Exception(f'{e}: {json_}')
 
     def _append_slash_to_path(self, url_path: str) -> str:
         """
@@ -100,8 +100,9 @@ class DataCiteREST:
         except Exception as e:
             raise Exception(e)
 
-        json_ = payload.dict()
-        return self.request(url_path, method='POST', json=json_)
+        json_ = payload.dict(by_alias=True)
+
+        return self.request(url_path, method='POST', json_=json_)
 
     def retrieve(self, doi: str) -> Dict:
         """ https://support.datacite.org/docs/api-get-doi """
@@ -124,4 +125,4 @@ class DataCiteREST:
             raise Exception(e)
 
         json_ = payload.dict()
-        return self.request(url_path, method='PUT', json=json_)
+        return self.request(url_path, method='PUT', json_=json_)

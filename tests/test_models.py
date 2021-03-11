@@ -1,18 +1,17 @@
-import datetime
 from unittest import TestCase
 import copy
 
 # from pydantic import BaseModel
 
 from datacite_rest import models
-from .shared import VALID_AUTH
+from .constants import VALID_AUTH_FMT, VALID_DOI_FMT
 
 
 class TestRespositoryAuthModel(TestCase):
     model = models.RespositoryAuthModel
 
     def _create_valid_base_model(self) -> model:
-        data = VALID_AUTH
+        data = VALID_AUTH_FMT
         return self.model(**data)
 
     def test_create_auth(self):
@@ -37,22 +36,7 @@ class TestDataCiteModel(TestCase):
     model = models.DataCiteModel
 
     def _create_valid_base_model(self) -> model:
-        data = {
-            'type': 'dois',
-            'attributes': {
-                'identifiers': [],
-                'creators': [],
-                'titles': [
-                    {'title': 'test'}
-                ],
-                'publisher': 'test',
-                'publication_year': datetime.datetime.utcnow().year,
-                'types': {
-                    'resource_type_general': 'Text'
-                },
-                'prefix': '10.111'
-            }
-        }
+        data = copy.deepcopy(VALID_DOI_FMT['data'])
         return self.model(**data)
 
     def test_create_doi(self):

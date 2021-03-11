@@ -3,43 +3,11 @@ import copy
 
 from datacite_rest import DataCiteREST
 
+from .constants import VALID_DRAFT_FMT, VALID_DOI_FMT
+
 
 class TestDataCiteREST(TestCase):
     """ must have valid env var set for endpoints """
-    VALID_DRAFT = {
-        'data': {
-            'type': 'dois',
-            'attributes': {
-                'prefix': '10.17623'
-            }
-        }
-    }
-    VALID_PUBLISH = {
-        'data': {
-            'type': 'dois',
-            'attributes': {
-                'event': 'publish',
-                'prefix': '10.17623',
-                'creators': [
-                    {
-                        'name': 'Data CO-OP'
-                    }
-                ],
-                'titles': [
-                    {
-                        'title': 'DataCite test'
-                    }
-                ],
-                'types': {
-                    'resourceTypeGeneral': 'Text'
-                },
-                'publisher': 'DataCite e.V.',
-                'publicationYear': 2021,
-                'url': 'https://datacoop.com.au/jedi'
-            }
-        }
-    }
-
     def _validate_response_detail(self, res: dict) -> None:
         """ recycle across tests """
         self.assertTrue(type(res) == dict)
@@ -51,13 +19,13 @@ class TestDataCiteREST(TestCase):
 
     def test_draft_create_fails(self):
         """ should fail without draft=True when missing required data """
-        json_body = copy.deepcopy(self.VALID_DRAFT)
+        json_body = copy.deepcopy(VALID_DRAFT_FMT)
         x = DataCiteREST()
         with self.assertRaises(Exception):
             _ = x.create(json_body=json_body)
 
     def test_draft_create(self):
-        json_body = copy.deepcopy(self.VALID_DRAFT)
+        json_body = copy.deepcopy(VALID_DRAFT_FMT)
         x = DataCiteREST()
         res = x.create(json_body=json_body, draft=True)
         self._validate_response_detail(res)
@@ -67,7 +35,8 @@ class TestDataCiteREST(TestCase):
         )
 
     def test_publish_create(self):
-        json_body = copy.deepcopy(self.VALID_PUBLISH)
+        json_body = copy.deepcopy(VALID_DOI_FMT)
+        json_body['data']['attributes']['event'] = 'publish'
         x = DataCiteREST()
         res = x.create(json_body=json_body)
         self._validate_response_detail(res)
@@ -77,7 +46,7 @@ class TestDataCiteREST(TestCase):
         )
 
     def test_retrieve(self):
-        json_body = copy.deepcopy(self.VALID_DRAFT)
+        json_body = copy.deepcopy(VALID_DRAFT_FMT)
         x = DataCiteREST()
         res = x.create(json_body=json_body, draft=True)
         self._validate_response_detail(res)
@@ -89,7 +58,7 @@ class TestDataCiteREST(TestCase):
         )
 
     def test_update(self):
-        json_body = copy.deepcopy(self.VALID_DRAFT)
+        json_body = copy.deepcopy(VALID_DRAFT_FMT)
         x = DataCiteREST()
         res = x.create(json_body=json_body, draft=True)
         self._validate_response_detail(res)

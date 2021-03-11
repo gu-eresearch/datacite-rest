@@ -20,13 +20,13 @@ class RespositoryAuth:
     ):
         """ bootstrap credentials from env vars if args not passed """
         if id_ is None:
-            id_ = os.getenv('DOI_REPOSITORY_ID')
+            id_ = os.getenv('DATACITE_REPOSITORY_ID')
         if password is None:
-            password = os.getenv('DOI_REPOSITORY_PASSWORD')
+            password = os.getenv('DATACITE_REPOSITORY_PASSWORD')
         if url is None:
-            url = os.getenv('DOI_REPOSITORY_URL')
+            url = os.getenv('DATACITE_REPOSITORY_URL')
         if prefix is None:
-            prefix = os.getenv('DOI_REPOSITORY_PREFIX')
+            prefix = os.getenv('DATACITE_REPOSITORY_PREFIX')
 
         self._auth = self._model(
             id=id_,
