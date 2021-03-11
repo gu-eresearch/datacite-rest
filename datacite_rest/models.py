@@ -119,14 +119,14 @@ class DataCiteRequiredAttributesModel(DataCiteAttributesBaseModel):
     https://support.datacite.org/docs/schema-mandatory-properties-v43#
     https://support.datacite.org/docs/schema-properties-overview-v43
     """
-    doi = str
-    identifiers: List[DataCiteIdentifierModel]
+    doi: str
+    identifiers: Optional[List[DataCiteIdentifierModel]]
     creators: List[DataCiteCreatorModel]
     titles: List[DataCiteTitleModel]
     publisher: str
     publication_year: conint(ge=2021, le=datetime.datetime.utcnow().year + 1)
     types: DataCiteTypeModel
-    url = HttpUrl
+    url: HttpUrl
 
     @validator('doi', check_fields=False, allow_reuse=True)
     def doi_should_contain_slash(cls, v):
@@ -146,12 +146,12 @@ class DataCiteAttributesModel(DataCiteRequiredAttributesModel):
 
 
 class DataCiteDraftModel(DataCiteBaseModel):
+    id: Optional[str]
     type: str
     attributes: DataCiteAttributesBaseModel
 
 
 class DataCiteModel(DataCiteDraftModel):
-    type: str
     attributes: DataCiteAttributesModel
 
 
@@ -197,3 +197,28 @@ class Schema43Model(JSONPayloadModel):
     https://schema.datacite.org/meta/kernel-4.3/doc/DataCite-MetadataKernel_v4.3.pdf
     """
     pass
+
+
+# class DataCiteQueryParamsModel(BaseModel):
+#     query = Optional[str]
+#     created = Optional[float]
+#     registered = Optional[float]
+#     provider_id = Optional[str]
+#     client_id = Optional[str]
+#     person_id = Optional[str]
+#     resource_type_id = Optional[str]
+#     subject = Optional[str]
+#     schema_version = Optional[str]
+#     random = Optional[bool]
+#     sample_size = Optional[float]
+#     sample_group = Optional[str]
+#     page[number] = Optional[float]
+#     page[size] = Optional[float]
+#     page[cursor] = Optional[float]
+#     include = Optional[str]
+#     sort = Optional[str]
+
+#     class Config:
+#         alias_generator = to_kebab
+#         allow_population_by_field_name = True
+#         arbitrary_types_allowed = True

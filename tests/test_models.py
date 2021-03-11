@@ -1,54 +1,11 @@
 import datetime
-from unittest import TestCase, mock
+from unittest import TestCase
 import copy
-import json
 
-from pydantic import BaseModel
+# from pydantic import BaseModel
 
-from datacite_rest import models, authentication, DataCiteREST
-
-VALID_AUTH = {
-    'id': 'abc123',
-    'password': 'secret',
-    'url': 'http://example.com',
-    'prefix': '10.123'
-}
-
-
-# class TestDataCiteREST(TestCase):
-#     """ must have valid env var set for endpoints """
-#     def test_draft_create(self):
-#         json_body = None
-#         with open('test_draft_create.json', 'r') as f:
-#             json_body = json.loads(f.read())
-
-#         x = DataCiteREST()
-#         _ = x.create(json_body=json_body)
-
-#     def test_publish_create(self):
-#         json_body = None
-#         with open('test_draft_create.json', 'r') as f:
-#             json_body = json.loads(f.read())
-
-#         x = DataCiteREST()
-#         _ = x.create(json_body=json_body)
-
-
-# TODO: rewrite TestJSONPayloadModel for new data: types
-# class TestJSONPayloadModel(TestCase):
-#     model = models.JSONPayloadModel
-
-#     def test_payload_list(self):
-#         _ = self.model(data=[1, 2, 3])
-
-#     def test_payload_dict(self):
-#         _ = self.model(data={'1': 2, '3': 4})
-
-#     def test_payload_model(self):
-#         class TestModel(BaseModel):
-#             x: str
-#         m = TestModel(x='test')
-#         _ = self.model(data=m)
+from datacite_rest import models
+from .shared import VALID_AUTH
 
 
 class TestRespositoryAuthModel(TestCase):
@@ -138,33 +95,18 @@ class TestDataCiteModel(TestCase):
             _ = self.model(**data)
 
 
-class TestRespositoryAuth(TestCase):
-    obj = authentication.RespositoryAuth
+# # TODO: rewrite TestJSONPayloadModel for new data: types
+# class TestJSONPayloadModel(TestCase):
+#     model = models.JSONPayloadModel
 
-    def _get_obj_properties(self, obj: authentication.RespositoryAuth):
-        _ = obj.id
-        _ = obj.password
-        _ = obj.url
-        _ = obj.prefix
+#     def test_payload_list(self):
+#         _ = self.model(data=[1, 2, 3])
 
-    def test_create_obj_from_args(self):
-        args = copy.deepcopy(VALID_AUTH)
-        args['id_'] = args.pop('id')
-        x = self.obj(**args)
-        self._get_obj_properties(x)
+#     def test_payload_dict(self):
+#         _ = self.model(data={'1': 2, '3': 4})
 
-    def test_create_obj_from_env_defaults(self):
-        env = {}
-        env['DOI_REPOSITORY_ID'] = VALID_AUTH['id']
-        env['DOI_REPOSITORY_PASSWORD'] = VALID_AUTH['password']
-        env['DOI_REPOSITORY_URL'] = VALID_AUTH['url']
-        env['DOI_REPOSITORY_PREFIX'] = VALID_AUTH['prefix']
-
-        with mock.patch.dict('os.environ', env):
-            x = self.obj()
-            self._get_obj_properties(x)
-
-    def test_create_obj_without_env_or_args_fails(self):
-        with self.assertRaises(Exception):
-            x = self.obj()
-            self._get_obj_properties(x)
+#     def test_payload_model(self):
+#         class TestModel(BaseModel):
+#             x: str
+#         m = TestModel(x='test')
+#         _ = self.model(data=m)
