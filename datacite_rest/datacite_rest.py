@@ -126,3 +126,10 @@ class DataCiteREST:
 
         json_ = payload.dict()
         return self.request(url_path, method='PUT', json_=json_)
+
+    def activities(self, doi: str) -> Dict:
+        """
+        https://support.datacite.org/reference/dois-2#get_dois-id-activities
+        """
+        url_path = f'{self._base_path}/{doi}/activities'
+        return self.request(url_path, method='GET')
