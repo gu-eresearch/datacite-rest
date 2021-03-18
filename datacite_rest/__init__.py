@@ -6,4 +6,8 @@ __author_email__ = 'g.burgmann@griffith.edu.au'
 __description__ = 'a package for managing dois'
 __license__ = 'MIT'
 
-from .datacite_rest import DataCiteREST  # noqa
+try:
+    from .datacite_rest import DataCiteREST  # noqa
+except Exception:
+    # preserve import here but stops setup.py breaking due to dependencies
+    pass
